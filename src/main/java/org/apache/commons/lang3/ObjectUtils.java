@@ -16,6 +16,8 @@
  */
 package org.apache.commons.lang3;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Array;
@@ -129,6 +131,32 @@ public class ObjectUtils {
     }
 
     /**
+     * <p>
+     * Checks if any value in the array is {@code null}. If none of the values
+     * are {@code null} or the array is {@code null} or empty then {@code false}
+     * is returned. Otherwise {@code true} is returned.
+     * </p>
+     * 
+     * <pre>
+     * ObjectUtils.anyNull())              = false
+     * ObjectUtils.anyNull(null))          = false
+     * ObjectUtils.anyNull(new Object[0])) = false
+     * ObjectUtils.anyNull(null, *))       = true 
+     * ObjectUtils.anyNull(*, null, *))    = true 
+     * ObjectUtils.anyNull(*))             = false
+     * </pre>
+     * 
+     * @param values
+     *            the values
+     * @return true, if any arg is null and values is not empty
+     * @see {@link #allNotNull(Object...)} for the inverse function (except for the test on empty values)
+     * @since 3.5
+     */
+    public static boolean anyNull(final Object... values) {
+	return ArrayUtils.isNotEmpty(values) && !allNotNull(values);
+    }
+
+    /**
      * <p>Checks if any value in the array is not {@code null}.
      * If all the values are {@code null} or the array is {@code null}
      * or empty then {@code false} is returned. Otherwise {@code true} is returned.</p>
@@ -150,6 +178,33 @@ public class ObjectUtils {
      */
     public static boolean anyNotNull(final Object... values) {
         return firstNonNull(values) != null;
+    }
+
+    /**
+     * Checks if <em>all</em> elements in values are {@code null}. If values is
+     * {@code null} or empty then this returns false.
+     * 
+     * <pre>
+     * ObjectUtils.allNull())                 = false
+     * ObjectUtils.allNull(null))             = false
+     * ObjectUtils.allNull(new Object[0]))    = false
+     * ObjectUtils.allNull(null, null, null)) = true 
+     * ObjectUtils.allNull(1))                = false
+     * ObjectUtils.allNull(1, null))          = false
+     * ObjectUtils.allNull(1, 2, 3))          = false
+     * </pre>
+     * 
+     * @param values
+     *            the values to test, may be {@code null} or empty
+     * @return true, iff all values are null and values is not empty
+     * @see {@link #anyNotNull(Object...)} for the inverse function (except for the test on empty values)
+     * @since 3.5
+     */
+    public static boolean allNull(final Object... values) {
+	if (ArrayUtils.isEmpty(values)) {
+	    return false;
+	}
+	return !anyNotNull(values);
     }
 
     /**
@@ -222,6 +277,38 @@ public class ObjectUtils {
         return object1.equals(object2);
     }
 
+    /**
+     * Checks if the given {@code ref} is contained at least once in
+     * {@code others}. If {@code} is null or empty then {@code false} is
+     * returned.
+     * <p>
+     * This is a more readable replacement for the idiomatic:
+     * {@code Arrays.asList(others).contains(ref)}.
+     * 
+     * <pre>
+     * ObjectUtils.equalsOneOf(1, 2, 1))                   = true 
+     * ObjectUtils.equalsOneOf(1, 1, 2))                   = true 
+     * ObjectUtils.equalsOneOf(1, null, 1))                = true 
+     * ObjectUtils.equalsOneOf(null, 1, null))             = true 
+     * ObjectUtils.equalsOneOf("b", "a b c".split(" ")))   = true 
+     * ObjectUtils.equalsOneOf(null, null))                = false
+     * ObjectUtils.equalsOneOf(1, null))                   = false
+     * ObjectUtils.equalsOneOf(null, new Object[0]))       = false
+     * ObjectUtils.equalsOneOf(1, 2, 3))                   = false
+     * </pre>
+     * 
+     * @param ref
+     *            the ref value to check the others against
+     * @param others
+     *            the others
+     * @return true, iff {@code ref} is contained at least once in
+     *         {@code others}
+     * @since 3.5
+     */
+    public static boolean equalsOneOf(final Object ref, final Object... others) {
+	return ArrayUtils.isNotEmpty(others) && ArrayUtils.contains(others, ref);
+    }    
+    
     /**
      * <p>Compares two objects for inequality, where either one or both
      * objects may be {@code null}.</p>

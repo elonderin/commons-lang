@@ -40,6 +40,7 @@ import org.apache.commons.lang3.mutable.MutableObject;
 import org.apache.commons.lang3.text.StrBuilder;
 import org.junit.Test;
 
+
 /**
  * Unit tests {@link org.apache.commons.lang3.ObjectUtils}.
  */
@@ -90,6 +91,21 @@ public class ObjectUtilsTest {
     }
 
     /**
+     */
+    @Test
+    public void testAnyNull() throws Exception {
+
+        assertEquals(false, ObjectUtils.anyNull());
+        assertEquals(false, ObjectUtils.anyNull(null));
+        assertEquals(false, ObjectUtils.anyNull(new Object[0]));
+
+        assertEquals(true, ObjectUtils.anyNull(null, 1));
+        assertEquals(true, ObjectUtils.anyNull(1, null, 1));
+        assertEquals(false, ObjectUtils.anyNull(1));
+
+    }
+    
+    /**
      * Tests {@link ObjectUtils#anyNotNull(Object...)}.
      */
     @Test
@@ -104,6 +120,22 @@ public class ObjectUtilsTest {
         assertTrue(ObjectUtils.anyNotNull(null, null, null, null, FOO, BAR));
     }
 
+    /**
+     */
+    @Test
+    public void testAllNull() throws Exception {
+
+        assertEquals(false, ObjectUtils.allNull());
+        assertEquals(false, ObjectUtils.allNull(null));
+        assertEquals(false, ObjectUtils.allNull(new Object[0]));
+
+        assertEquals(true, ObjectUtils.allNull(null, null, null));
+        assertEquals(false, ObjectUtils.allNull(1));
+        assertEquals(false, ObjectUtils.allNull(1, null));
+        assertEquals(false, ObjectUtils.allNull(1, 2, 3));
+
+    }
+    
     /**
      * Tests {@link ObjectUtils#allNotNull(Object...)}.
      */
@@ -131,6 +163,22 @@ public class ObjectUtilsTest {
         assertTrue("ObjectUtils.equals(\"foo\", \"foo\") returned false", ObjectUtils.equals(FOO, FOO));
     }
 
+    /**
+     */
+    @Test
+    public void test_EqualsOneOf() throws Exception {
+	assertEquals(true, ObjectUtils.equalsOneOf(1, 2, 1));
+	assertEquals(true, ObjectUtils.equalsOneOf(1, 1, 2));
+	assertEquals(true, ObjectUtils.equalsOneOf(1, null, 1));
+	assertEquals(true, ObjectUtils.equalsOneOf(null, 1, null));
+	assertEquals(true, ObjectUtils.equalsOneOf("b", "a b c".split(" ")));
+
+	assertEquals(false, ObjectUtils.equalsOneOf(null, null));
+	assertEquals(false, ObjectUtils.equalsOneOf(1, null));
+	assertEquals(false, ObjectUtils.equalsOneOf(null, new Object[0]));
+	assertEquals(false, ObjectUtils.equalsOneOf(1, 2, 3));
+    }
+    
     @Test
     public void testNotEqual() {
         assertFalse("ObjectUtils.notEqual(null, null) returned false", ObjectUtils.notEqual(null, null));
